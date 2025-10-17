@@ -1,0 +1,46 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+usage() {
+  echo "Usage: desktop-icons [show|hide|toggle|status]"
+  exit 1
+}
+
+cmd="${1:-toggle}"
+
+# Current state (defaults to true if key missing)
+current="$(defaults read com.apple.finder CreateDesktop 2>/dev/null || echo true)"
+
+set_state() {
+  local state="$1"    # true or false
+  defaults write com.apple.finder CreateDesktop -bool "$state"
+  # Restart Finder to apply
+  killall Finder >/dev/null 2>&1 || true
+}
+
+case "$cmd" in
+  show)
+    set_state true
+    echo "Desktop icons: shown"
+    ;;
+  hide)
+    set_state false
+    echo "Desktop icons: hidden"
+    ;;
+  toggle)
+    if [[ "$current" == "true" ]]; then
+      set_state false
+      echo "Desktop icons: hidden"
+    else
+      set_state true
+      echo "Desktop icons: shown"
+    fi
+    ;;
+  status)
+    [[ "$current" == "true" ]] && echo "Status: shown" || echo "Status: hidden"
+    ;;
+  *)
+    usage
+    ;;
+esac
+
