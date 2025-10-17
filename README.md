@@ -1,4 +1,4 @@
-#Usage
+# Usage
 
 desktop-icons          # toggles
 desktop-icons hide     # hide
